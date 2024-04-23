@@ -1,0 +1,155 @@
+String palavra;
+char[] letrasErradas;
+char[] letrasCertas;
+char letraAtual;
+boolean gameOver;
+int partesDoBoneco;
+char[] letrasSelecionaveis;
+
+void setup() {
+  size(800, 600);
+  textAlign(CENTER, CENTER);
+  textSize(40);
+  palavra = escolherPalavra();
+  letrasErradas = new char[7];
+  letrasCertas = new char[palavra.length()];
+  letraAtual = ' ';
+  gameOver = false;
+  partesDoBoneco = 0;
+  letrasSelecionaveis = new char[26];
+  for (int i = 0; i < 26; i++) {
+    letrasSelecionaveis[i] = (char)('A' + i);
+  }
+}
+
+void draw() {
+  background(220);
+  
+  // Desenhar a palavra
+  for (int i = 0; i < palavra.length(); i++) {
+    char letra = palavra.charAt(i);
+    if (letra == letraAtual || letrasCertas[i] != 0) {
+      fill(0);
+      text(letra, i * 50 + 100, height/2);
+    } else {
+      fill(200);
+      text("_", i * 50 + 100, height/2);
+    }
+  }
+  
+  // Desenhar as letras selecionáveis
+  for (int i = 0; i < 26; i++) {
+    char letra = letrasSelecionaveis[i];
+    if (letraSelecionada(letra)) {
+      fill(0, 255, 0);
+    } else {
+      fill(255);
+    }
+    text(letra, i * 30 + 50, height - 100);
+  }
+  
+  // Desenhar as letras erradas
+  for (int i = 0; i < letrasErradas.length; i++) {
+    if (letrasErradas[i] != 0) {
+      fill(255, 0, 0);
+      text(letrasErradas[i], i * 30 + 50, height - 50);
+    }
+  }
+  
+  // Desenhar o boneco na forca
+  if (!gameOver) {
+    desenharBoneco();
+  } else {
+    fill(255, 0, 0);
+    textSize(60);
+    text("GAME OVER", width/2, height/2);
+  }
+}
+
+void keyPressed() {
+  if (!gameOver) {
+    char keyUpper = Character.toUpperCase(key);
+    if (key >= 'A' && key <= 'Z' && letraSelecionavel(keyUpper)) {
+      letraAtual = keyUpper;
+      if (palavra.indexOf(keyUpper) == -1) {
+        letrasErradas[partesDoBoneco] = keyUpper;
+        partesDoBoneco++;
+        if (partesDoBoneco >= 7) {
+          gameOver = true;
+        }
+      } else {
+        for (int i = 0; i < palavra.length(); i++) {
+          if (palavra.charAt(i) == keyUpper) {
+            letrasCertas[i] = keyUpper;
+          }
+        }
+      }
+    }
+  }
+}
+
+boolean letraSelecionada(char letra) {
+  return letra == letraAtual;
+}
+
+boolean letraSelecionavel(char letra) {
+  for (int i = 0; i < letrasSelecionaveis.length; i++) {
+    if (letrasSelecionaveis[i] == letra) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void desenharBoneco() {
+  // Desenhar poste da forca
+  strokeWeight(10);
+  line(width / 2 - 100, 100, width / 2 - 100, height / 2 - 100);
+  
+  if (partesDoBoneco >= 1) {
+    // Desenhar trave horizontal
+    line(width / 2 - 100, 100, width / 2 + 100, 100);
+  }
+  
+  if (partesDoBoneco >= 2) {
+    // Desenhar corda
+    line(width / 2 + 100, 100, width / 2 + 100, 150);
+  }
+  
+  if (partesDoBoneco >= 3) {
+    // Desenhar cabeça
+    ellipse(width / 2 + 100, 200, 60, 60);
+  }
+  
+  if (partesDoBoneco >= 4) {
+    // Desenhar corpo
+    line(width / 2 + 100, 230, width / 2 + 100, 350);
+  }
+  
+  if (partesDoBoneco >= 5) {
+    // Desenhar braço esquerdo
+    line(width / 2 + 100, 270, width / 2 + 50, 300);
+  }
+  
+  if (partesDoBoneco >= 6) {
+    // Desenhar braço direito
+    line(width / 2 + 100, 270, width / 2 + 150, 300);
+  }
+  
+  if (partesDoBoneco >= 7) {
+    // Desenhar perna esquerda
+    line(width / 2 + 100, 350, width / 2 + 50, 400);
+  }
+  
+  if (partesDoBoneco >= 8) {
+    // Desenhar perna direita
+    line(width / 2 + 100, 350, width / 2 + 150, 400);
+  }
+}
+
+String escolherPalavra() {
+  String[] palavras = {
+    "ABACAXI", "BANANA", "MORANGO", "LARANJA", "UVA", "PERA", "MELANCIA", "ABACATE", "MANGA", "GOIABA"
+  };
+  return palavras[int(random(palavras.length))];
+}
